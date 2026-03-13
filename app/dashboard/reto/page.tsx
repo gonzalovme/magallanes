@@ -1,14 +1,13 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { Target, Users, DollarSign, TrendingUp, Settings } from 'lucide-react'
 import ChallengeView from '@/components/ChallengeView'
 
-const AREA_CONFIG: Record<string, { label: string; icon: typeof Target; accent: string }> = {
-  estrategia: { label: 'Estrategia', icon: Target, accent: '#C9A84C' },
-  liderazgo: { label: 'Liderazgo', icon: Users, accent: '#7C9EE8' },
-  finanzas: { label: 'Finanzas', icon: DollarSign, accent: '#6ECC8E' },
-  marketing: { label: 'Marketing', icon: TrendingUp, accent: '#E87C9E' },
-  operaciones: { label: 'Operaciones', icon: Settings, accent: '#B87CE8' },
+const AREA_CONFIG: Record<string, { label: string; accent: string }> = {
+  estrategia: { label: 'Estrategia', accent: '#C9A84C' },
+  liderazgo: { label: 'Liderazgo', accent: '#7C9EE8' },
+  finanzas: { label: 'Finanzas', accent: '#6ECC8E' },
+  marketing: { label: 'Marketing', accent: '#E87C9E' },
+  operaciones: { label: 'Operaciones', accent: '#B87CE8' },
 }
 
 export default async function RetoPage() {
@@ -26,10 +25,9 @@ export default async function RetoPage() {
 
   const { data: completions } = await supabase
     .from('challenge_completions')
-    .select('day_number, completed_at, reflection')
+    .select('day_number')
     .eq('user_id', user.id)
     .eq('area', profile.area)
-    .order('day_number', { ascending: true })
 
   const completedDays = new Set((completions || []).map((c: { day_number: number }) => c.day_number))
   const challengeDay = profile.challenge_day || 0
@@ -51,7 +49,6 @@ export default async function RetoPage() {
       challenge={challenge}
       area={area}
       currentDay={nextDay}
-      totalDays={30}
       completedDays={Array.from(completedDays) as number[]}
       todayCompleted={todayCompleted}
       userId={user.id}
